@@ -1,0 +1,146 @@
+/**
+ * Print stylesheet.
+ *
+ * Everything that is not part of the report is hidden when the document is
+ * printed. The paper size itself is controlled at runtime through a dynamic
+ * `@page` rule injected by the reports view (see `usePageSizeStyle`).
+ */
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt;
+  }
+
+  /* Chrome of the application is not part of the report. */
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* The report preview becomes the printed document. */
+  .print-area {
+    position: static !important;
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    transform: none !important;
+    overflow: visible !important;
+  }
+
+  /* Page chrome of the standalone report view. */
+  .print-page,
+  .print-preview-container {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* The print preview of the employee details becomes the printed page. */
+  .print-overlay {
+    position: static !important;
+    display: block !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+  }
+
+  .print-overlay > .no-print {
+    display: none !important;
+  }
+
+  .print-overlay > .print-sheet {
+    display: block !important;
+    padding: 0 !important;
+  }
+
+  .print-area * {
+    overflow: visible !important;
+  }
+
+  /* Keep tables readable and headers repeated on every page. */
+  table {
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Cards, grid items and figures must not be split. */
+  .report-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .report-break-after {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* Images never exceed their container. */
+  img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* The photo of the joining form keeps the size of the preview and fills the
+     box of the cell completely. */
+  img.form-photo {
+    height: 41.2mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    object-position: center top !important;
+  }
+
+  /* Borders and text stay readable in greyscale. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  /* Avoid empty pages caused by trailing margins. */
+  .print-area > :last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .text-ink-500,
+  .text-ink-400,
+  .text-ink-600 {
+    color: #333 !important;
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "kores-employee-records",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Browser-based employee data management, Excel import/export and print-ready reporting SPA. No backend required.",
+  "scripts": {
+    "predev": "node scripts/prepare-tesseract.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/prepare-tesseract.mjs",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --pretty false",
+    "check:cloud-ocr": "node scripts/check-cloud-ocr.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^2.30.0",
+    "@hookform/resolvers": "^3.10.0",
+    "@tesseract.js-data/eng": "^1.0.0",
+    "browser-image-compression": "^2.0.2",
+    "dexie": "^4.4.6",
+    "lucide-react": "^1.60.0",
+    "pdfjs-dist": "^6.4.299",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-hook-form": "^7.90.0",
+    "react-router-dom": "^7.18.4",
+    "tesseract.js": "^7.0.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.31",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4"
+  }
+}

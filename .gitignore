@@ -1,0 +1,36 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+tmp-bundle
+
+# The OCR engine is copied out of node_modules by
+# scripts/prepare-tesseract.mjs — it is generated, not written by hand.
+public/tesseract
+
+# Tesseract writes the language data next to the project when it runs in node.
+*.traineddata
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Env
+.env
+.env.*
+!.env.example

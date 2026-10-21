@@ -1,0 +1,183 @@
+/**
+ * The "New Joining Form" — the paper form of PEFCO Foundry Division (Bhosari).
+ *
+ * The rules below reproduce the paper form: the seven column grid, the row
+ * heights, the fonts and the weights of the printed sheet. Every length is
+ * written in millimetres, so the preview on the screen and the printed page
+ * keep the very same proportions.
+ */
+
+.joining-form {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: #000000;
+  font-family: Arial, Helvetica, 'Helvetica Neue', sans-serif;
+  font-size: 8.5pt;
+  line-height: 1.15;
+  background: #ffffff;
+}
+
+/* The base rule of every cell — `:where()` keeps it weaker than the styles
+   of the single parts of the form, so a part can always overrule it. */
+.joining-form :where(th, td) {
+  border: 0.5pt solid #000000;
+  padding: 0.3mm 1.1mm;
+  vertical-align: middle;
+  text-align: left;
+  font-weight: 400;
+  overflow-wrap: break-word;
+}
+
+/* ------------------------------------------------------------ row heights */
+/* The rows fill the printable height of the page (A4 minus the 8 mm margin
+   of the sheet) — the paper form covers the whole sheet. */
+.jf-r-title {
+  height: 8.9mm;
+}
+
+.jf-r-top {
+  height: 8.9mm;
+}
+
+.jf-r-head {
+  height: 10.3mm;
+}
+
+.jf-r-name {
+  height: 6.6mm;
+}
+
+.jf-r-slim {
+  height: 6mm;
+}
+
+.jf-r-line {
+  height: 7.9mm;
+}
+
+.jf-r-row {
+  height: 7.3mm;
+}
+
+.jf-r-wrap {
+  height: 14.6mm;
+}
+
+.jf-r-sign {
+  height: 20mm;
+}
+
+/* The signature field is one box across the whole form. The three labels stand
+   in the columns of the grid (1-2, 3-4 and 5-7), the lines between them are
+   dropped — so the field reads as a single box and the labels sit exactly on
+   the column lines of the form. */
+.jf-sign-cell {
+  vertical-align: bottom;
+  font-size: 10pt;
+}
+
+.jf-sign-cell-first {
+  border-right: none;
+}
+
+.jf-sign-cell-middle {
+  border-left: none;
+  border-right: none;
+}
+
+.jf-sign-cell-last {
+  border-left: none;
+}
+
+/* The empty line under the signature field carries no border — it only keeps
+   the field and the next row of the form apart. */
+.jf-r-sign-gap {
+  height: 3.3mm;
+}
+
+.jf-r-sign-gap > td {
+  border: none;
+}
+
+/* ---------------------------------------------------------------- the type */
+.jf-title-text {
+  font-size: 13pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+.jf-head-text {
+  font-size: 10.5pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+.jf-top-text {
+  font-size: 10pt;
+  font-weight: 700;
+}
+
+.jf-top-value {
+  font-size: 10pt;
+}
+
+.jf-sr-text {
+  font-size: 8pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+.jf-bold {
+  font-weight: 700;
+}
+
+/* A cell that carries an attribute and a value: the attribute stands on the
+   left of the cell, the value on its right. */
+.jf-pair {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5mm;
+}
+
+.jf-value {
+  text-align: right;
+}
+
+/* A long number is spread out — the digits of a phone number have to stay
+   readable in the narrow column of the form. */
+.jf-spread .jf-value {
+  letter-spacing: 0.6pt;
+}
+
+.jf-photo-cell {
+  padding: 0.6mm;
+  text-align: center;
+}
+
+.jf-photo-text {
+  font-size: 7.5pt;
+  text-align: center;
+}
+
+/* The photo fills the box of the cell — the box reaches from the head of the
+   personal information down to the "Father Name" row. The photo is scaled so
+   that it covers the whole box, the overflow is cut off at the bottom, so no
+   white space is left around it. */
+.jf-photo-cell img {
+  display: block;
+  width: 100%;
+  height: 41.2mm;
+  max-width: 100%;
+  margin: 0 auto;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.jf-photo-blank {
+  height: 41.2mm;
+  width: 100%;
+  margin: 0 auto;
+  background: #ffffff;
+}

@@ -1,0 +1,40 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+
+# The cloud reader is reached under /api/ocr. Its rule has to come before the
+# catch-all rewrite, otherwise the request would be answered with the page.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/ocr"
+  status = 200
+
+# The router uses hash based URLs, so no SPA rewrite is required. The rule is
+# kept as a safety net for a future switch to the history API.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The OCR engine never changes for a given build.
+[[headers]]
+  for = "/tesseract/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
