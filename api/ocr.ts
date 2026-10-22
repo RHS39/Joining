@@ -4,26 +4,9 @@
  * The function holds the API key of the Gemini API, so the key never reaches
  * the browser. The browser posts a photo here and gets the bank details back.
  */
-import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { ServerResponse } from 'node:http';
+import { readJsonBody, type BodyRequest } from '../server/http';
 import { runPassbookOcr } from '../server/ocr';
-
-/** The request of the runtime — it adds the parsed body to the node request. */
-type FunctionRequest = IncomingMessage & { body?: unknown };
-
-/** The body of a request, whatever the runtime put into it. */
-async function readBody(req: FunctionRequest): Promise<unknown> {
-  const body = req.body;
-  if (typeof body === 'string') return JSON.parse(body) as unknown;
-  if (body && typeof body === 'object' && !Array.isArray(body) && !ArrayBuffer.isView(body)) return body;
-
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : (chunk as Buffer));
-  }
-  const text = Buffer.concat(chunks).toString('utf8');
-  if (!text) return null;
-  return JSON.parse(text) as unknown;
-}
 
 /** The headers of the answer. */
 function headers(): Record<string, string> {
@@ -40,7 +23,7 @@ function status(code: string): number {
   return 400;
 }
 
-export default async function handler(req: FunctionRequest, res: ServerResponse): Promise<void> {
+export default async function handler(req: BodyRequest, res: ServerResponse): Promise<void> {
   if (req.method !== 'POST') {
     res.writeHead(405, { ...headers(), allow: 'POST' });
     res.end(JSON.stringify({ ok: false, code: 'bad-request', error: 'Only POST is allowed.' }));
@@ -49,7 +32,7 @@ export default async function handler(req: FunctionRequest, res: ServerResponse)
 
   let body: unknown = null;
   try {
-    body = await readBody(req);
+    body = await readJsonBody(req);
   } catch {
     res.writeHead(400, headers());
     res.end(JSON.stringify({ ok: false, code: 'bad-request', error: 'The request is not valid JSON.' }));

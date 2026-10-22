@@ -1,1 +1,1 @@
-{"root":["./api/ocr.ts","./server/ocr.ts","./netlify/functions/ocr.ts"],"version":"5.9.3"}
+{"root":["./api/ocr.ts","./server/http.ts","./server/ocr.ts","./server/render.ts","./netlify/functions/ocr.ts"],"version":"5.9.3"}

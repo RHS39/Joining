@@ -1,0 +1,30 @@
+# The deployment of the application on Render.
+#
+# A blueprint is a file that describes the service, so that the deployment is
+# one click: https://render.com/deploy
+#
+# The service serves the built application and the cloud reader (/api/ocr) —
+# Render has no serverless functions, so both live in one small web service.
+services:
+  - type: web
+    name: kores-employee-records
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # The key of the Gemini API, created in https://aistudio.google.com/apikey.
+      # It is asked for when the blueprint is deployed.
+      - key: GEMINI_API_KEY
+        sync: false
+      # The model that reads the photo. It is free of charge on the free tier.
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      # The addresses that may use the cloud reader when the application is
+      # published somewhere else. Empty means: only the address of the service.
+      # - key: OCR_ALLOWED_ORIGINS
+      #   value: https://example.com

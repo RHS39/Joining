@@ -32,6 +32,7 @@ happens after the free, local read of the same photo. See
    - [GitHub Pages](#github-pages)
    - [Vercel](#vercel)
    - [Netlify](#netlify)
+   - [Render](#render)
 7. [The OCR engine](#the-ocr-engine)
 8. [Cloud reader](#cloud-reader)
 9. [Testing checklist](#testing-checklist)
@@ -127,6 +128,7 @@ kores-employee-records/
 ├── .env.example                        Example build-time configuration
 ├── netlify.toml                        Netlify build + header configuration
 ├── vercel.json                         Vercel build + header configuration
+├── render.yaml                         Render blueprint (web service)
 ├── index.html                          HTML entry point
 ├── package.json
 ├── postcss.config.js
@@ -135,10 +137,14 @@ kores-employee-records/
 ├── vite.config.ts                      Build config, BASE_PATH handling
 ├── api/ocr.ts                          The cloud reader (Vercel function)
 ├── netlify/functions/ocr.ts            The cloud reader (Netlify function)
-├── server/ocr.ts                       The cloud reader (shared, transport free)
+├── server/
+│   ├── http.ts                         The HTTP helpers of the service
+│   ├── ocr.ts                          The cloud reader (shared, transport free)
+│   └── render.ts                       The web service of Render
 ├── scripts/
-│   ├── prepare-tesseract.mjs           Puts the OCR engine into public/
-│   └── check-cloud-ocr.mjs              Checks the cloud reader
+│   ├── build-server.mjs                Builds the web service
+│   ├── check-cloud-ocr.mjs             Checks the cloud reader
+│   └── prepare-tesseract.mjs           Puts the OCR engine into public/
 ├── public/
 │   ├── .nojekyll                       GitHub Pages: serve files verbatim
 │   ├── favicon.svg
@@ -624,6 +630,41 @@ Notes:
 2. Build command `npm run build`, publish directory `dist`.
 3. Deploy. `BASE_PATH` stays `/`.
 
+### Render
+
+Render has no serverless functions, so the application is deployed as one
+small **web service**: `server/render.ts` serves the built application out of
+`dist` and answers the request of the cloud reader at `/api/ocr`.
+
+`render.yaml` describes the service, so the deployment is one click:
+[render.com/deploy](https://render.com/deploy) — it asks for the API key
+while the blueprint is deployed. Or set the service up by hand:
+
+| Setting | Value |
+| --- | --- |
+| Runtime | Node |
+| Build command | `npm ci && npm run build` |
+| Start command | `npm start` |
+| Health check path | `/` |
+| Environment | `GEMINI_API_KEY` (server), `GEMINI_MODEL` (optional) |
+
+The service listens on the port of the `PORT` variable, which Render sets, and
+serves the application under the root of the address, so `BASE_PATH` stays
+`/`.
+
+Two things to know about the free plan:
+
+- A free web service **sleeps** after a period without a request, so the first
+  request after a pause takes a few seconds longer. Only the cloud reader is
+  affected — the application and the OCR of a passbook are in the browser.
+- The service is limited in the number of hours it runs per month. When the
+  application is busy, the `starter` plan is the better choice.
+
+When the application is published somewhere else and only the cloud reader
+runs on Render, put the address of that application into
+`OCR_ALLOWED_ORIGINS` (a comma separated list) and point the application at
+the service with `VITE_OCR_PROXY_URL`.
+
 ### Any other static host
 
 Upload the contents of `dist/` to the web root. For a sub-path installation set
@@ -720,6 +761,7 @@ least $5 of credit.
 | --- | --- | --- |
 | Vercel | `api/ocr.ts` | `/api/ocr` |
 | Netlify | `netlify/functions/ocr.ts` | `/api/ocr` (redirected by `netlify.toml`) |
+| Render | `server/render.ts` (a web service) | `/api/ocr` |
 | GitHub Pages | — | not available, the local reader is used |
 
 5. When the function runs on another address, set the client variable
@@ -809,6 +851,15 @@ Use this list to verify a deployment (or a local build).
       this month.
 - [ ] Without a cloud reader the application still works and the photo is
       never sent anywhere.
+
+**The web service of Render**
+
+- [ ] `npm run build` builds `dist-server/render.js` and `npm start` serves
+      the application.
+- [ ] `GET /` answers with the application, `GET /tesseract/worker.min.js`
+      answers with the OCR engine.
+- [ ] `POST /api/ocr` answers with the bank details, or with an error when
+      the key is missing.
 
 **Photos**
 
