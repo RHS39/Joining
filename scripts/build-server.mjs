@@ -18,4 +18,12 @@ await build({
   logLevel: 'error',
 });
 
-console.log('The web service is built: dist-server/render.js');
+
+const PORT = Number(process.env.PORT) || 10000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+
+/*console.log('The web service is built: dist-server/render.js');
+*/
