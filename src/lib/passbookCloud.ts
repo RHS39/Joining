@@ -9,8 +9,8 @@
  */
 import { z } from 'zod';
 
-/** The model that reads the photo. Free on the free tier of the Gemini API. */
-export const CLOUD_OCR_MODEL = 'gemini-3.8-flash';
+/** A low-latency model suited to multimodal document extraction. */
+export const CLOUD_OCR_MODEL = 'gemini-3.5-flash-lite';
 
 /** Mime types the proxy accepts. */
 export const CLOUD_OCR_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
@@ -129,13 +129,10 @@ export const CLOUD_OCR_SYSTEM_PROMPT = [
 
 /** The instruction that is sent with every photo. */
 export const CLOUD_OCR_USER_PROMPT = [
-  'Read the bank details out of this photo of a bank passbook.',
-  '',
-  'Rules:',
-  '- The account number is printed as digits only. When it is printed in groups, separated by spaces, dots or dashes, join the groups into one number of 9 to 18 digits. Do not leave any space in the value.',
-  '- The IFSC code has exactly 11 characters: four letters, then the digit 0, then six letters or digits. The fifth character is always the digit 0, never the letter O. A letter O and the digit 0 look the same in the print — use the rule above to tell them apart.',
-  '- The bank name is the name of the bank itself, for example "HDFC Bank" or "State Bank of India", not the name of the branch.',
-  '- The branch name is the name of the branch only, for example "Koramangala" or "Main Branch". It is not the address.',
-  '- Copy the holder name as it is printed, in upper case letters.',
-  '- When a value is missing, hidden, covered or unreadable, return an empty string for it. Never invent a value.',
+  'Extract only the bank name, account number, IFSC, branch name and account holder name from this passbook photo.',
+  'Do not transcribe unrelated page text. Return an empty string for any missing or unreadable value; never guess.',
+  'Join account-number digit groups; return digits only. The account number should have 9 to 18 digits.',
+  'IFSC is 11 characters: four letters, digit 0, then six letters or digits. Its fifth character is the digit 0, not O.',
+  'Return the bank name only, not the branch. Return the branch name only, not its address. Copy the holder name as printed.',
+  'In raw_text, include only short verbatim fragments around the account number and IFSC as evidence, not a full-page transcription.',
 ].join('\n');

@@ -7,11 +7,13 @@ import {
   PlusCircle,
   Printer,
   Settings as SettingsIcon,
+  LogOut,
   Table2,
   X,
 } from 'lucide-react';
 import { cx } from '@/lib/cx';
 import { useSettings } from './SettingsContext';
+import { useAuth } from './Auth';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -26,6 +28,7 @@ export function Layout({ children }: { children?: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { settings } = useSettings();
+  const { signOut } = useAuth();
   const title = settings.preferences.appTitle || 'Kores Employee Records';
 
   useEffect(() => {
@@ -62,7 +65,18 @@ export function Layout({ children }: { children?: ReactNode }) {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2 lg:hidden">
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={signOut}
+              className="inline-flex items-center gap-2 rounded-lg border border-ink-300 bg-white px-3 py-2 text-sm font-medium text-ink-700 transition hover:bg-ink-50"
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Sign out</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               type="button"
               onClick={() => setMobileOpen((open) => !open)}

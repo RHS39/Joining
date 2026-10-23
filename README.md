@@ -57,6 +57,7 @@ happens after the free, local read of the same photo. See
 | **Export** | `.xlsx` and `.csv` export of either the filtered or the complete dataset, with typed date and numeric cells, stable column order and readable column widths. |
 | **Reports** | Three layouts (Employee list, Employee card, Employee directory), A4 / US Letter, portrait / landscape, configurable title, organisation and footer note, on-screen preview that prints as shown. |
 | **Settings** | Application title, organisation, currency, footer note, default paper size and orientation, default category, category management, employee field definitions (text / long text / number / date / select, grouped in sections), field templates, full backup and restore. |
+| **Demo sign-in** | Login ID and password gate using the public `public/userauth.txt` file. This is a demo convenience only, not security. |
 
 The quantity / unit price / total amount block of a generic stock system is
 **off by default** and can be switched on in *Settings → Application* if the
@@ -104,6 +105,12 @@ Additional scripts:
 ```bash
 npm run typecheck   # tsc -b, no emit
 ```
+
+For local cloud-reader tests, put `GEMINI_API_KEY=...` in the ignored root
+`.env` file, then run `npm run build` and `npm start`. The start command loads
+that file on Node 22; the key stays on the server and must not use a `VITE_`
+prefix. On Render, set `GEMINI_API_KEY` in the service's private Environment
+settings instead.
 
 The exact commands used to create the project are:
 
@@ -648,6 +655,16 @@ while the blueprint is deployed. Or set the service up by hand:
 | Health check path | `/` |
 | Environment | `GEMINI_API_KEY` (server), `GEMINI_MODEL` (optional) |
 
+Set `GEMINI_API_KEY` as a secret environment variable in the Render service
+settings (or enter it in Render's private blueprint prompt). Do not put the key
+in `render.yaml`, `.env.example`, or any file committed to Git. If a key has
+been pasted into a source file or shared chat, revoke it and create a new one
+in Google AI Studio before deploying.
+Set `GEMINI_MODEL` to `gemini-3.5-flash-lite` in the Render Environment settings
+for an existing deployment that still has the older model configured, then
+redeploy. Changes to `render.yaml` only affect the live service after its
+blueprint configuration is applied.
+
 The service listens on the port of the `PORT` variable, which Render sets, and
 serves the application under the root of the address, so `BASE_PATH` stays
 `/`.
@@ -716,9 +733,9 @@ is fast and free, but it often misreads a long number — a misread account
 number or IFSC code is the main reason a passbook has to be typed by hand.
 
 The **cloud reader** is an optional serverless function that sends the photo
-to the Gemini API and gets the four bank details back as JSON. It is more
-careful with printed numbers, because the model reads the whole page at once
-and is told that the fifth character of an IFSC code is always the digit `0`.
+to the Gemini API and gets the bank details back as JSON. It uses Gemini
+Flash-Lite for low-latency multimodal extraction and asks for only the needed
+values plus short evidence, rather than a full-page transcription.
 
 ### How it is used
 
@@ -739,14 +756,9 @@ profile.
 
 | | Per call | 25 calls |
 | --- | --- | --- |
-| Gemini 3.8 Flash, free tier | free of charge | free of charge |
-| Gemini 3.8 Flash, paid tier | ≈ $0.002 | ≈ $0.06 |
-| Gemini 4 Argon, paid tier | ≈ $0.006 | ≈ $0.15 |
-
-The free tier of the Gemini API is enough for this limit. Note that on the
-free tier the content may be used to improve Google's products, while the
-paid tier does not use it — the paid tier needs a billing account with at
-least $5 of credit.
+See [current Gemini API pricing](https://ai.google.dev/gemini-api/docs/pricing)
+and Google's [data-use terms](https://ai.google.dev/gemini-api/terms) for the
+selected model and your account tier.
 
 ### Setting it up
 
@@ -754,7 +766,8 @@ least $5 of credit.
 2. Set it as a **server** variable of the deployment — `GEMINI_API_KEY`. The
    name must not start with `VITE_`, otherwise the key would end up in the
    browser bundle.
-3. Optionally set `GEMINI_MODEL` (default `gemini-3.8-flash`).
+3. Optionally set `GEMINI_MODEL` (default `gemini-3.5-flash-lite`). See
+   [Gemini model documentation](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite).
 4. Deploy the function:
 
 | Host | The function | The address |
@@ -953,6 +966,16 @@ Use this list to verify a deployment (or a local build).
 
 ## Security and privacy
 
+- The sign-in screen is a **demo-only client-side gate**. Its credentials are
+  fetched from the public `public/userauth.txt` file and are visible to anyone
+  who can access the deployed app; a browser-only gate can also be bypassed.
+  The sample login is `demo-user` with password `DemoOnly!2026`. Never put real
+  credentials in this file or rely on this feature to protect employee records.
+- A successful sign-in is remembered in this tab's `sessionStorage`, so
+  refreshing the page does not sign the user out. Signing out clears the saved
+  state; closing the tab normally ends the session.
+- Real authentication requires server-side identity verification and access
+  controls. This static/browser-based app does not provide those protections.
 - Employee data and photos are stored **only in the browser** (IndexedDB) of the
   device and browser profile that created them. They are **not** synchronised
   between devices, browsers or profiles, and they are not backed up automatically.

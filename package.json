@@ -11,7 +11,7 @@
     "build": "tsc -b && vite build && node scripts/build-server.mjs",
     "build:server": "node scripts/build-server.mjs",
     "preview": "vite preview",
-    "start": "node dist-server/render.js",
+    "start": "node --env-file-if-exists=.env dist-server/render.js",
     "typecheck": "tsc -b --pretty false",
     "check:cloud-ocr": "node scripts/check-cloud-ocr.mjs"
   },

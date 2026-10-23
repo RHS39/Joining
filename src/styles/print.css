@@ -111,15 +111,26 @@
     break-inside: avoid;
   }
 
-  /* The photo of the joining form keeps the size of the preview and fills the
-     box of the cell completely. */
+  /* Stretch the photo to the exact inner frame dimensions when printed. */
+  .joining-form .jf-photo-cell {
+    padding: 0 !important;
+  }
+
+  .joining-form .jf-photo-frame {
+    height: 40mm !important;
+    padding: 1mm !important;
+  }
+
   img.form-photo {
-    height: 41.2mm !important;
+    height: 38mm !important;
     width: 100% !important;
     max-width: 100% !important;
     max-height: none !important;
-    object-fit: cover !important;
-    object-position: center top !important;
+    object-fit: fill !important;
+  }
+
+  .joining-form .jf-photo-blank {
+    height: 38mm !important;
   }
 
   /* Borders and text stay readable in greyscale. */

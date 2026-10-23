@@ -1,4 +1,5 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from '@/components/Auth';
 import { Layout } from '@/components/Layout';
 import { RecordsProvider } from '@/components/RecordsContext';
 import { SettingsProvider } from '@/components/SettingsContext';
@@ -18,26 +19,28 @@ import SettingsPage from '@/pages/SettingsPage';
  */
 export default function App() {
   return (
-    <ToastProvider>
-      <SettingsProvider>
-        <RecordsProvider>
-          <HashRouter>
-            <Routes>
-              {/* The report view owns its full page chrome so the preview can be printed as is. */}
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route element={<Layout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="records" element={<RecordsPage />} />
-                <Route path="records/new" element={<RecordEditorPage />} />
-                <Route path="records/:id/edit" element={<RecordEditorPage />} />
-                <Route path="data" element={<ImportExportPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </HashRouter>
-        </RecordsProvider>
-      </SettingsProvider>
-    </ToastProvider>
+    <AuthProvider>
+      <ToastProvider>
+        <SettingsProvider>
+          <RecordsProvider>
+            <HashRouter>
+              <Routes>
+                {/* The report view owns its full page chrome so the preview can be printed as is. */}
+                <Route path="/reports" element={<ReportsPage />} />
+                <Route element={<Layout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="records" element={<RecordsPage />} />
+                  <Route path="records/new" element={<RecordEditorPage />} />
+                  <Route path="records/:id/edit" element={<RecordEditorPage />} />
+                  <Route path="data" element={<ImportExportPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </HashRouter>
+          </RecordsProvider>
+        </SettingsProvider>
+      </ToastProvider>
+    </AuthProvider>
   );
 }

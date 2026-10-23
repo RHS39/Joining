@@ -145,6 +145,14 @@
   text-align: right;
 }
 
+.jf-bank-account {
+  letter-spacing: 1pt;
+}
+
+.jf-bank-ifsc {
+  letter-spacing: 0.6pt;
+}
+
 /* A long number is spread out — the digits of a phone number have to stay
    readable in the narrow column of the form. */
 .jf-spread .jf-value {
@@ -154,6 +162,14 @@
 .jf-photo-cell {
   padding: 0.6mm;
   text-align: center;
+}
+
+.jf-photo-frame {
+  box-sizing: border-box;
+  width: 100%;
+  height: 40mm;
+  margin: 0 auto;
+  padding: 1mm;
 }
 
 .jf-photo-text {
@@ -168,16 +184,14 @@
 .jf-photo-cell img {
   display: block;
   width: 100%;
-  height: 41.2mm;
+  height: 38mm;
   max-width: 100%;
-  margin: 0 auto;
   object-fit: cover;
   object-position: center top;
 }
 
 .jf-photo-blank {
-  height: 41.2mm;
+  height: 38mm;
   width: 100%;
-  margin: 0 auto;
   background: #ffffff;
 }

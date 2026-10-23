@@ -21,9 +21,9 @@ services:
       # It is asked for when the blueprint is deployed.
       - key: GEMINI_API_KEY
         sync: false
-      # The model that reads the photo. It is free of charge on the free tier.
+      # Low-latency multimodal model for bank-detail extraction.
       - key: GEMINI_MODEL
-        value: gemini-3.8-flash
+        value: gemini-3.5-flash-lite
       # The addresses that may use the cloud reader when the application is
       # published somewhere else. Empty means: only the address of the service.
       # - key: OCR_ALLOWED_ORIGINS

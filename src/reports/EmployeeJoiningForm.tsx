@@ -23,14 +23,26 @@ function FormPhoto({ attachment, alt }: { attachment?: ImageAttachment; alt: str
   const url = useObjectUrl(attachment?.blob);
 
   if (!attachment) {
-    return <span className="jf-photo-text">Photo</span>;
+    return (
+      <div className="jf-photo-frame">
+        <span className="jf-photo-text">Photo</span>
+      </div>
+    );
   }
 
   if (!url) {
-    return <div className="jf-photo-blank" />;
+    return (
+      <div className="jf-photo-frame">
+        <div className="jf-photo-blank" />
+      </div>
+    );
   }
 
-  return <img src={url} alt={alt} className="form-photo" />;
+  return (
+    <div className="jf-photo-frame">
+      <img src={url} alt={alt} className="form-photo" />
+    </div>
+  );
 }
 
 /**
@@ -94,10 +106,10 @@ export function EmployeeJoiningForm({ record, image, organisation }: EmployeeJoi
   };
 
   /** A cell with a prompt and the value of the employee behind it. */
-  const pair = (prompt: string, value: string) => (
+  const pair = (prompt: string, value: string, valueClassName = '') => (
     <span className="jf-pair">
       <span className="jf-bold">{prompt}</span>
-      {value ? <span className="jf-value">{value}</span> : null}
+      {value ? <span className={`jf-value ${valueClassName}`}>{value}</span> : null}
     </span>
   );
 
@@ -250,8 +262,8 @@ export function EmployeeJoiningForm({ record, image, organisation }: EmployeeJoi
         <tr className="jf-r-row">
           <th className="jf-sr-text">15</th>
           <th className="jf-bold">Bank Account No.</th>
-          <td colSpan={2}>{text('bank_account_no')}</td>
-          <td colSpan={3}>{pair('Bank IFSC Code', text('bank_ifsc_code'))}</td>
+          <td colSpan={2}><span className="jf-bank-account">{text('bank_account_no')}</span></td>
+          <td colSpan={3}>{pair('Bank IFSC Code', text('bank_ifsc_code'), 'jf-bank-ifsc')}</td>
         </tr>
         <tr className="jf-r-row">
           <th className="jf-sr-text">17</th>
