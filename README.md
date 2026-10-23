@@ -57,7 +57,7 @@ happens after the free, local read of the same photo. See
 | **Export** | `.xlsx` and `.csv` export of either the filtered or the complete dataset, with typed date and numeric cells, stable column order and readable column widths. |
 | **Reports** | Three layouts (Employee list, Employee card, Employee directory), A4 / US Letter, portrait / landscape, configurable title, organisation and footer note, on-screen preview that prints as shown. |
 | **Settings** | Application title, organisation, currency, footer note, default paper size and orientation, default category, category management, employee field definitions (text / long text / number / date / select, grouped in sections), field templates, full backup and restore. |
-| **Demo sign-in** | Login ID and password gate using the public `public/userauth.txt` file. This is a demo convenience only, not security. |
+| **Demo sign-in** | Login ID and password gate using the public `public/userauth.txt` file. Successful sign-in times are appended to the server-side `login-times.txt` file (login IDs and timestamps only). This is a demo convenience only, not security. |
 
 The quantity / unit price / total amount block of a generic stock system is
 **off by default** and can be switched on in *Settings → Application* if the
@@ -111,6 +111,13 @@ For local cloud-reader tests, put `GEMINI_API_KEY=...` in the ignored root
 that file on Node 22; the key stays on the server and must not use a `VITE_`
 prefix. On Render, set `GEMINI_API_KEY` in the service's private Environment
 settings instead.
+
+Successful sign-ins are recorded by the Node web service in the root
+`login-times.txt` file. Use `npm run build` and `npm start` to run locally with
+this endpoint; Vite's development and preview servers do not provide it. The
+log stores the login ID and UTC timestamp only, never the password. On hosting
+platforms with ephemeral filesystems, log entries may be lost on restart or
+redeploy.
 
 The exact commands used to create the project are:
 
@@ -433,7 +440,7 @@ receives from the employer. Its structure is stored in the application
 | *Personal Details* | Gender | Gender |
 | *Personal Details* | UAN | UAN No. |
 | *Personal Details* | Mobile Number | Self Contact no. |
-| *Registration Details* | Marital Status | Marital Status (*Unmarried* → *Single*) |
+| *Registration Details* | Marital Status | Marital Status (*Single* or *Unmarried* → *Unmarried*) |
 | *Registration Details* | Present Address | Temporary Address |
 | *Registration Details* | Permanent Address | Permanent Address |
 | *Current Employer Details* | Name of Employer | Name of Contractor |

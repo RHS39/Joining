@@ -1,4 +1,5 @@
 # DEMO ONLY. This file is publicly readable and is not secure storage.
 # Add one account per line in login-id:password format.
 demo-user:DemoOnly!2026
-rohit:Rohit256
+rohit:Rohit2560
+Arvind:Arvind@9170

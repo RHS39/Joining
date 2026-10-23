@@ -143,7 +143,7 @@ export const JOINING_FORM_TEMPLATE: FieldTemplate = {
       label: 'Marital Status',
       type: 'select',
       section: 'Personal Information',
-      options: ['Single', 'Married', 'Divorced', 'Widowed'],
+      options: ['Unmarried', 'Married', 'Divorced', 'Widowed'],
       aliases: ['marital status', 'marriage status'],
     },
     {

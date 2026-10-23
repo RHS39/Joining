@@ -109,8 +109,8 @@ export const STANDARD_FORMAT: PdfFormat = {
   synonyms: {
     // The card writes the marital status in its own words.
     'custom:marital_status': {
-      unmarried: 'Single',
-      single: 'Single',
+      unmarried: 'Unmarried',
+      single: 'Unmarried',
       married: 'Married',
       widowed: 'Widowed',
       divorcee: 'Divorced',

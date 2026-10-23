@@ -8,7 +8,7 @@
  *   node dist-server/render.js
  */
 import { createReadStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { appendFile, stat } from 'node:fs/promises';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { extname, join, resolve, sep } from 'node:path';
 import { readJsonBody } from './http';
@@ -129,6 +129,50 @@ const server = createServer((req, res) => {
   void (async () => {
     const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
     let path = url.pathname;
+
+    // Record successful demo sign-ins without ever receiving or storing passwords.
+    if (path === `${prefix}api/login-log` || path === '/api/login-log') {
+      if (req.method !== 'POST') {
+        json(res, 405, { ok: false, error: 'Only POST is allowed.' });
+        return;
+      }
+
+      let body: unknown;
+      try {
+        body = await readJsonBody(req);
+      } catch {
+        json(res, 400, { ok: false, error: 'The request is not valid JSON.' });
+        return;
+      }
+
+      const loginId = body && typeof body === 'object' && 'loginId' in body
+        ? body.loginId
+        : null;
+      if (
+        typeof loginId !== 'string' ||
+        !loginId.trim() ||
+        loginId.trim().length > 128 ||
+        /[\u0000-\u001f\u007f]/.test(loginId)
+      ) {
+        json(res, 400, { ok: false, error: 'A valid login ID is required.' });
+        return;
+      }
+
+      try {
+        await appendFile(
+          join(process.cwd(), 'login-times.txt'),
+          `${new Date().toISOString()}\t${loginId.trim()}\n`,
+          'utf8',
+        );
+      } catch (error) {
+        console.error('Could not record a successful sign-in.', error);
+        json(res, 500, { ok: false, error: 'The login time could not be recorded.' });
+        return;
+      }
+
+      json(res, 200, { ok: true });
+      return;
+    }
 
     // The cloud reader.
     if (path === `${prefix}api/ocr` || path === '/api/ocr') {

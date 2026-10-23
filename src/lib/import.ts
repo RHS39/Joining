@@ -181,7 +181,12 @@ export function buildImportPlan(options: BuildPlanOptions): ImportPlan {
         custom[fieldKey] = null;
         return;
       }
-      custom[fieldKey] = column.type === 'number' ? (typeof value === 'number' ? value : Number(value)) : value;
+      custom[fieldKey] =
+        fieldKey === 'marital_status' && typeof value === 'string' && value.trim().toLowerCase() === 'single'
+          ? 'Unmarried'
+          : column.type === 'number'
+            ? (typeof value === 'number' ? value : Number(value))
+            : value;
     });
 
     const candidate = {

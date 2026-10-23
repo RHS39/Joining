@@ -117,6 +117,17 @@ export async function migrateRenamedFields(): Promise<number> {
     await saveCustomFields(applyRenamedFields(fields));
   }
 
+  if (fields) {
+    const migratedFields = fields.map((field) =>
+      field.key === 'marital_status' && field.options?.includes('Single')
+        ? { ...field, options: field.options.map((option) => (option === 'Single' ? 'Unmarried' : option)) }
+        : field,
+    );
+    if (migratedFields.some((field, index) => field !== fields[index])) {
+      await saveCustomFields(applyRenamedFields(migratedFields));
+    }
+  }
+
   const records = await db.records.toArray();
   const migrated: DataRecord[] = [];
 
@@ -132,6 +143,12 @@ export async function migrateRenamedFields(): Promise<number> {
       if (custom[newKey] === undefined || custom[newKey] === null) custom[newKey] = value;
       changed = true;
     });
+
+    const maritalStatus = custom.marital_status;
+    if (typeof maritalStatus === 'string' && maritalStatus.trim().toLowerCase() === 'single') {
+      custom.marital_status = 'Unmarried';
+      changed = true;
+    }
 
     if (changed) migrated.push({ ...record, custom });
   });

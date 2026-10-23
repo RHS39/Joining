@@ -128,9 +128,11 @@ function LoginScreen({
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting) return;
     const matched = credentials.some(
       (credential) => credential.loginId === loginId.trim() && credential.password === password,
     );
@@ -138,11 +140,28 @@ function LoginScreen({
       setError('The login ID or password is incorrect.');
       return;
     }
+
+    setSubmitting(true);
     try {
+      const response = await fetch(`${import.meta.env.BASE_URL}api/login-log`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ loginId: loginId.trim() }),
+      });
+      const result: unknown = await response.json();
+      if (!response.ok || !result || typeof result !== 'object' || !('ok' in result) || result.ok !== true) {
+        throw new Error('The login time could not be recorded. Please try again.');
+      }
       onAuthenticated();
       setError('');
-    } catch {
-      setError('The sign-in session could not be saved in this browser. Check that session storage is enabled.');
+    } catch (error) {
+      setError(
+        error instanceof Error && error.message.includes('session')
+          ? 'The sign-in session could not be saved in this browser. Check that session storage is enabled.'
+          : 'The login time could not be recorded. Make sure the app is running with its Node server, then try again.',
+      );
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -168,6 +187,7 @@ function LoginScreen({
               type="text"
               autoComplete="username"
               required
+              disabled={submitting}
               value={loginId}
               onChange={(event) => setLoginId(event.target.value)}
               className="field-input"
@@ -181,6 +201,7 @@ function LoginScreen({
               type="password"
               autoComplete="current-password"
               required
+              disabled={submitting}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               className="field-input"
@@ -189,10 +210,12 @@ function LoginScreen({
           {error ? <p className="text-sm text-red-700" role="alert">{error}</p> : null}
           <button
             type="submit"
+            disabled={submitting}
+            aria-busy={submitting}
             className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-700"
           >
             <LockKeyhole className="h-4 w-4" aria-hidden="true" />
-            Sign in
+            {submitting ? 'Recording sign-in…' : 'Sign in'}
           </button>
         </form>
 
